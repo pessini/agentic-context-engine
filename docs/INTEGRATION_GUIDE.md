@@ -316,6 +316,16 @@ if self.is_learning and self.playbook.bullets():
 - Learning toggle
 - Playbook persistence
 
+### Runnable Examples
+
+See these working examples in the repository:
+
+- **Browser automation**: [`examples/browser-use/simple_ace_agent.py`](../examples/browser-use/simple_ace_agent.py)
+- **Custom integration**: [`examples/custom_integration_example.py`](../examples/custom_integration_example.py)
+- **LangChain chains/agents**: [`examples/langchain/simple_chain_example.py`](../examples/langchain/simple_chain_example.py)
+
+Full list: [`examples/README.md`](../examples/README.md)
+
 ---
 
 ## Advanced Topics

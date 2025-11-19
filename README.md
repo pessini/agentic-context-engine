@@ -386,6 +386,10 @@ output = generator.generate(
 - [Quick Start Guide](docs/QUICK_START.md) - Get running in 5 minutes
 - [API Reference](docs/API_REFERENCE.md) - Complete API documentation
 - [Examples](examples/) - Ready-to-run code examples
+  - [Browser Automation](examples/browser-use/) - Self-improving browser agents
+  - [LangChain Integration](examples/langchain/) - Wrap chains/agents with learning
+  - [Custom Integration](examples/custom_integration_example.py) - Pattern for any agent
+- [Integration Guide](docs/INTEGRATION_GUIDE.md) - Add ACE to existing agents
 - [ACE Framework Guide](docs/COMPLETE_GUIDE_TO_ACE.md) - Deep dive into Agentic Context Engineering
 - [Prompt Engineering](docs/PROMPT_ENGINEERING.md) - Advanced prompt techniques
 - [Benchmarks](benchmarks/README.md) - Evaluate ACE performance with scientific rigor across multiple datasets
