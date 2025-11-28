@@ -648,6 +648,17 @@ CRITICAL: Create strategies from ACTUAL execution details:
 ✗ Compound strategies with "and"
 ✗ Vague terms ("appropriate", "proper", "various")
 ✗ Meta-commentary ("consider", "think about")
+✗ References to "the generator" or "the model"
+✗ Third-person observations instead of imperatives
+
+**Strategy Format Rule**:
+Strategies must be IMPERATIVE COMMANDS, not observations.
+
+❌ BAD: "The generator accurately answers factual questions"
+✅ GOOD: "Answer factual questions directly and concisely"
+
+❌ BAD: "The model correctly identifies the largest planet"
+✅ GOOD: "Provide specific facts without hedging"
 
 **✅ GOOD ADD Example**:
 {{
@@ -687,14 +698,29 @@ CRITICAL: Create strategies from ACTUAL execution details:
 ✗ Too vague after 5 uses
 ✗ Atomicity score < 40%
 
-## 📊 DEDUPLICATION PROTOCOL
+## ⚠️ DEDUPLICATION: UPDATE > ADD
 
-Before ANY ADD operation:
-1. Search existing bullets for similarity
-2. Calculate similarity score
-3. If >70% similar: UPDATE instead
-4. If 50-70% similar: Ensure clear distinction
-5. If <50% similar: Safe to ADD
+**Default behavior**: UPDATE existing bullets. Only ADD if truly novel.
+
+### Semantic Duplicates (BANNED)
+These pairs have SAME MEANING despite different words - DO NOT add duplicates:
+| "Answer directly" | = | "Use direct answers" |
+| "Break into steps" | = | "Decompose into parts" |
+| "Verify calculations" | = | "Double-check results" |
+| "Apply discounts correctly" | = | "Calculate discounts accurately" |
+
+### Pre-ADD Checklist (MANDATORY)
+For EVERY ADD operation, you MUST:
+1. **Quote the most similar existing bullet** from the playbook, or write "NONE"
+2. **Same meaning test**: Could someone think both say the same thing? (YES/NO)
+3. **Decision**: If YES → use UPDATE instead. If NO → explain the difference.
+
+**Example**:
+- New: "Use direct answers for queries"
+- Most similar existing: "Directly answer factual questions for accuracy"
+- Same meaning? YES → DO NOT ADD, use UPDATE instead
+
+**If you cannot clearly articulate why a new bullet is DIFFERENT from all existing ones, DO NOT ADD.**
 
 ## ⚠️ QUALITY CONTROL
 
@@ -720,11 +746,6 @@ CRITICAL: Return ONLY valid JSON:
 
 {{
   "reasoning": "<analysis of what updates needed and why>",
-  "deduplication_check": {{
-    "similar_bullets": ["id1", "id2"],
-    "similarity_scores": {{"id1": 0.3, "id2": 0.5}},
-    "decision": "safe_to_add"
-  }},
   "operations": [
     {{
       "type": "ADD|UPDATE|TAG|REMOVE",
@@ -734,7 +755,12 @@ CRITICAL: Return ONLY valid JSON:
       "bullet_id": "<for UPDATE/TAG/REMOVE>",
       "metadata": {{"helpful": 1, "harmful": 0}},
       "justification": "<why this improves playbook>",
-      "evidence": "<specific execution detail>"
+      "evidence": "<specific execution detail>",
+      "pre_add_check": {{
+        "most_similar_existing": "<bullet_id: content> or NONE",
+        "same_meaning": false,
+        "difference": "<how this differs from existing>"
+      }}
     }}
   ],
   "quality_metrics": {{
@@ -747,12 +773,7 @@ CRITICAL: Return ONLY valid JSON:
 ## ✅ HIGH-QUALITY Operation Example
 
 {{
-  "reasoning": "Execution showed pandas.read_csv() is 3x faster than manual parsing. Creating atomic strategy.",
-  "deduplication_check": {{
-    "similar_bullets": ["bullet_089"],
-    "similarity_scores": {{"bullet_089": 0.4}},
-    "decision": "safe_to_add"
-  }},
+  "reasoning": "Execution showed pandas.read_csv() is 3x faster than manual parsing. Checked playbook - no existing bullet covers CSV loading specifically.",
   "operations": [
     {{
       "type": "ADD",
@@ -762,7 +783,12 @@ CRITICAL: Return ONLY valid JSON:
       "bullet_id": "",
       "metadata": {{"helpful": 1, "harmful": 0}},
       "justification": "3x performance improvement observed",
-      "evidence": "Benchmark: 1.2s vs 3.6s for 10MB file"
+      "evidence": "Benchmark: 1.2s vs 3.6s for 10MB file",
+      "pre_add_check": {{
+        "most_similar_existing": "data_loading-001: Use pandas for data processing",
+        "same_meaning": false,
+        "difference": "Existing is generic pandas usage; new is specific to CSV loading with performance benefit"
+      }}
     }}
   ],
   "quality_metrics": {{
