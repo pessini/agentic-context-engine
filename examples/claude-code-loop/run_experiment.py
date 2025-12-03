@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Run 4 ACE translation experiments automatically.
+Run 2 ACE translation experiments automatically.
 
 This demonstrates ACE's learning across multiple iterations on the same task.
 All metrics are logged to .data/runs.json for analysis.
@@ -41,7 +41,7 @@ def run_reset_workspace():
 def run_ace_loop(run_number):
     """Run ace_loop.py in AUTO_MODE."""
     print("\n" + "=" * 70)
-    print(f"🚀 STARTING RUN {run_number}/4")
+    print(f"🚀 STARTING RUN {run_number}/2")
     print("=" * 70 + "\n")
 
     start_time = time.time()
@@ -66,18 +66,18 @@ def run_ace_loop(run_number):
 
 
 def main():
-    """Run 4 experiments."""
+    """Run 2 experiments."""
     print("\n" + "=" * 70)
-    print("🧪 ACE 4-RUN LEARNING EXPERIMENT")
+    print("🧪 ACE 2-RUN LEARNING EXPERIMENT")
     print("=" * 70)
-    print("\nThis will run ACE 4 times on the same Python→TypeScript task.")
+    print("\nThis will run ACE 2 times on the same Python→TypeScript task.")
     print("Each run uses the playbook from previous runs.")
     print("All metrics logged to .data/runs.json")
     print("\nStarting experiment...\n")
 
     total_start = time.time()
 
-    for run_num in range(1, 5):
+    for run_num in range(1, 3):
         # Reset workspace (keeps playbook)
         run_reset_workspace()
 
@@ -89,7 +89,7 @@ def main():
             break
 
         # Brief pause between runs
-        if run_num < 4:
+        if run_num < 2:
             time.sleep(2)
 
     total_elapsed = time.time() - total_start

@@ -251,6 +251,46 @@ def validate_example(workspace_dir: Path, example_name: str) -> tuple[bool, str]
         return False, f"❌ {example_name} example failed:\n{output}"
 
 
+def validate_naming_convention(workspace_dir: Path) -> tuple[bool, str]:
+    """
+    Check that TypeScript uses ACEVercelAI (not ACELiteLLM).
+
+    TypeScript uses Vercel AI SDK, not LiteLLM, so the class should be
+    named ACEVercelAI to avoid confusion.
+    """
+    target_src = workspace_dir / "target" / "src"
+
+    if not target_src.exists():
+        return True, "✅ No src directory yet (skipping naming check)"
+
+    errors = []
+
+    # Check for wrong class name in TypeScript files
+    for ts_file in target_src.rglob("*.ts"):
+        try:
+            content = ts_file.read_text()
+            if "ACELiteLLM" in content and "integrations" in str(ts_file):
+                errors.append(
+                    f"{ts_file.name}: Uses 'ACELiteLLM' - should be 'ACEVercelAI' "
+                    "(TypeScript uses Vercel AI SDK, not LiteLLM)"
+                )
+        except Exception:
+            pass
+
+    # Check for wrong filename
+    if (target_src / "integrations" / "litellm.ts").exists():
+        errors.append(
+            "File 'integrations/litellm.ts' should be named 'vercel-ai.ts' "
+            "(TypeScript uses Vercel AI SDK, not LiteLLM)"
+        )
+
+    if errors:
+        return False, "❌ Naming convention errors:\n" + "\n".join(
+            f"  - {e}" for e in errors
+        )
+    return True, "✅ Naming conventions correct (ACEVercelAI)"
+
+
 def run_full_validation(workspace_dir: Path) -> tuple[bool, str]:
     """
     Run all validation checks in sequence.
@@ -261,7 +301,7 @@ def run_full_validation(workspace_dir: Path) -> tuple[bool, str]:
     results = []
 
     # 1. TypeScript compilation
-    print(f"\n🔍 Step 1/4: TypeScript Compilation")
+    print(f"\n🔍 Step 1/5: TypeScript Compilation")
     success, msg = validate_typescript_compilation(workspace_dir)
     results.append((success, msg))
     print(f"   {msg.split(':')[0]}")  # Print status only
@@ -269,23 +309,31 @@ def run_full_validation(workspace_dir: Path) -> tuple[bool, str]:
         return False, msg
 
     # 2. Unit tests
-    print(f"\n🔍 Step 2/4: Unit Tests")
+    print(f"\n🔍 Step 2/5: Unit Tests")
     success, msg = validate_unit_tests(workspace_dir)
     results.append((success, msg))
     print(f"   {msg.split(':')[0]}")
     if not success:
         return False, msg
 
-    # 3. Simple example
-    print(f"\n🔍 Step 3/4: Simple Example")
+    # 3. Naming conventions (ACEVercelAI, not ACELiteLLM)
+    print(f"\n🔍 Step 3/5: Naming Conventions")
+    success, msg = validate_naming_convention(workspace_dir)
+    results.append((success, msg))
+    print(f"   {msg.split(':')[0]}")
+    if not success:
+        return False, msg
+
+    # 4. Simple example
+    print(f"\n🔍 Step 4/5: Simple Example")
     success, msg = validate_example(workspace_dir, "simple")
     results.append((success, msg))
     print(f"   {msg.split(':')[0]}")
     if not success:
         return False, msg
 
-    # 4. Seahorse example
-    print(f"\n🔍 Step 4/4: Seahorse Example")
+    # 5. Seahorse example
+    print(f"\n🔍 Step 5/5: Seahorse Example")
     success, msg = validate_example(workspace_dir, "seahorse")
     results.append((success, msg))
     print(f"   {msg.split(':')[0]}")
