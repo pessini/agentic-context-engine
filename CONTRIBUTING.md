@@ -64,6 +64,7 @@ We use git worktrees to work on multiple branches simultaneously without switchi
 | Command | Description | Example |
 |---------|-------------|---------|
 | `/create-branch` | Create branch + worktree | `/create-branch feature add-caching` |
+| `/checkout-branch` | Switch to branch (creates worktree if needed) | `/checkout-branch add-caching` |
 | `/list-branches` | List branches with worktree status | `/list-branches` or `/list-branches feature` |
 | `/remove-branch` | Remove branch + worktree | `/remove-branch feature/john/add-caching` |
 
